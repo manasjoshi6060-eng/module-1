@@ -45,7 +45,7 @@ if hour < 12:
     greeting = "Good morning!"
 elif hour < 17:
     greeting = "Good afternoon!"
-elif hour < 21:
+else:
     greeting = "Good evening!"
 
 if len(st.session_state.messages) == 1:
