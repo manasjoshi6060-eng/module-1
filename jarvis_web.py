@@ -47,8 +47,7 @@ elif hour < 17:
     greeting = "Good afternoon!"
 elif hour < 21:
     greeting = "Good evening!"
-else:
-    greeting = "Good night!"
+
 if len(st.session_state.messages) == 1:
     st.info(f"{greeting} I am Jarvis. How can I help you today?")
 
