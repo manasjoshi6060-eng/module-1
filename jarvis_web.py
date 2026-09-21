@@ -83,6 +83,6 @@ if user_input:
 
     # Keep history reasonably short
     if len(st.session_state.messages) > 22:
-        st.session_state.messages = [st.session_state.messages[0]] + st.session_state.messages[-20:]0]] + st.session_state.messages[-20:]
+       st.session_state.messages = [st.session_state.messages[0]] + st.session_state.messages[-20:]
 
     save_memory(st.session_state.messages)
