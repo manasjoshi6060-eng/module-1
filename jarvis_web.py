@@ -5,8 +5,7 @@ import os
 from datetime import datetime
 
 # ========== SETTINGS ==========
-API_KEY = st.secrets["GROQ_API_KEY"]  # ← put your real key here
-MEMORY_FILE = "memory.json"
+API_KEY = st.secrets["GROQ_API_KEY"]
 
 SYSTEM_PROMPT = """
 You are Jarvis, a friendly, helpful, and slightly witty personal AI assistant.
@@ -15,9 +14,8 @@ Your style:
 - Speak naturally like a real person talking
 - Keep replies short, clear, and conversational
 - Do not use tables, markdown formatting, or bullet lists unless the user specifically asks for them
-- Avoid sounding like a textbook or documentation
 - Be warm, polite, and a little playful when appropriate
-- If the user asks a question, answer it directly in normal sentences
+- Answer questions directly in normal sentences
 
 Always reply in a natural spoken style.
 """
@@ -32,27 +30,11 @@ st.set_page_config(
 st.title("🤖 Jarvis")
 st.caption("Your personal AI assistant")
 
-
-# ========== MEMORY ==========
-def load_memory():
-    if os.path.exists(MEMORY_FILE):
-        with open(MEMORY_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
-
-
-def save_memory(history):
-    with open(MEMORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(history, f, indent=2, ensure_ascii=False)
-
-
-# ========== INITIALIZE ==========
+# ========== INITIALIZE SESSION ==========
 if "messages" not in st.session_state:
-    st.session_state.messages = load_memory()
-    if not st.session_state.messages:
-        st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-# Greeting
+# Greeting (only shows once per session)
 hour = datetime.now().hour
 if hour < 12:
     greeting = "Good morning!"
@@ -61,10 +43,10 @@ elif hour < 18:
 else:
     greeting = "Good evening!"
 
-if len(st.session_state.messages) <= 1:
+if len(st.session_state.messages) == 1:
     st.info(f"{greeting} I am Jarvis. How can I help you today?")
 
-# ========== SHOW CHAT HISTORY ==========
+# ========== SHOW CHAT ==========
 for message in st.session_state.messages:
     if message["role"] == "user":
         with st.chat_message("user"):
@@ -79,13 +61,13 @@ user_input = st.chat_input("Type your message here...")
 if user_input:
     # Add user message
     st.session_state.messages.append({"role": "user", "content": user_input})
-
+    
     with st.chat_message("user"):
         st.write(user_input)
 
     # Get AI reply
     client = Groq(api_key=API_KEY)
-
+    
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             response = client.chat.completions.create(
@@ -99,8 +81,8 @@ if user_input:
     # Save assistant reply
     st.session_state.messages.append({"role": "assistant", "content": reply})
 
-    # Keep history short
+    # Keep history reasonably short
     if len(st.session_state.messages) > 22:
-        st.session_state.messages = [st.session_state.messages[0]] + st.session_state.messages[-20:]
+        st.session_state.messages = [st.session_state.messages[0]] + st.session_state.messages[-20:]0]] + st.session_state.messages[-20:]
 
     save_memory(st.session_state.messages)
