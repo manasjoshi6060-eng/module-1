@@ -34,15 +34,21 @@ st.caption("Your personal AI assistant")
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-# Greeting
-hour = datetime.now().hour
+# Greeting (using India time)
+from datetime import datetime, timezone, timedelta
+
+ist = timezone(timedelta(hours=5, minutes=30))
+current_time = datetime.now(ist)
+hour = current_time.hour
+
 if hour < 12:
     greeting = "Good morning!"
-elif hour < 18:
+elif hour < 17:
     greeting = "Good afternoon!"
-else:
+elif hour < 21:
     greeting = "Good evening!"
-
+else:
+    greeting = "Good night!"
 if len(st.session_state.messages) == 1:
     st.info(f"{greeting} I am Jarvis. How can I help you today?")
 
