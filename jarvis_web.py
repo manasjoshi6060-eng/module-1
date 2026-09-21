@@ -34,7 +34,7 @@ st.caption("Your personal AI assistant")
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-# Greeting (only shows once per session)
+# Greeting
 hour = datetime.now().hour
 if hour < 12:
     greeting = "Good morning!"
@@ -46,7 +46,7 @@ else:
 if len(st.session_state.messages) == 1:
     st.info(f"{greeting} I am Jarvis. How can I help you today?")
 
-# ========== SHOW CHAT ==========
+# ========== SHOW CHAT HISTORY ==========
 for message in st.session_state.messages:
     if message["role"] == "user":
         with st.chat_message("user"):
@@ -61,13 +61,13 @@ user_input = st.chat_input("Type your message here...")
 if user_input:
     # Add user message
     st.session_state.messages.append({"role": "user", "content": user_input})
-    
+
     with st.chat_message("user"):
         st.write(user_input)
 
     # Get AI reply
     client = Groq(api_key=API_KEY)
-    
+
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             response = client.chat.completions.create(
@@ -81,8 +81,6 @@ if user_input:
     # Save assistant reply
     st.session_state.messages.append({"role": "assistant", "content": reply})
 
-    # Keep history reasonably short
+    # Keep history short
     if len(st.session_state.messages) > 22:
-       st.session_state.messages = [st.session_state.messages[0]] + st.session_state.messages[-20:]
-
-    save_memory(st.session_state.messages)
+        st.session_state.messages = [st.session_state.messages[0]] + st.session_state.messages[-20:]
